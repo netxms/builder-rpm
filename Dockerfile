@@ -7,7 +7,7 @@ RUN dnf install -y mock
 VOLUME /build
 VOLUME /result
 
-COPY files/build.sh /
+COPY files/ /
 WORKDIR /build
 
 CMD ["/build.sh"]
