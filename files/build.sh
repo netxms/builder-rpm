@@ -10,7 +10,7 @@ for V in 8 9; do
       --addrepo https://packages.netxms.org/epel/$V/$(arch)/stable
 done
 
-for V in 36 37; do
+for V in 36 37 38; do
    mock --enable-network -r fedora-$V-$(arch) --spec SPECS/*.spec --sources SOURCES \
       --addrepo https://packages.netxms.org/devel/fedora/$V/$(arch)/stable \
       --addrepo https://packages.netxms.org/fedora/$V/$(arch)/stable
