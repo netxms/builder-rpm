@@ -1,8 +1,8 @@
 .PHONY: all build clean
 
-IMAGE_REVISION=1.0
+IMAGE_REVISION=1.1
 
-alk: build
+all: build
 
 build:
 	docker build -t ghcr.io/netxms/builder-rpm:$(IMAGE_REVISION) .
