@@ -17,6 +17,14 @@ function dump_logs_and_exit() {
 
 set -e
 
+mkdir -p /etc/containers
+cat > /etc/containers/storage.conf <<__END
+[storage]
+driver = "vfs"
+runroot = "/tmp/containers/storage"
+graphroot = "/tmp/containers/storage"
+__END
+
 cd /drone/src
 
 mkdir -p /var/cache/mock/m2-repo
