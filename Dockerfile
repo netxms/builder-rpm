@@ -1,7 +1,7 @@
 FROM fedora:40
 
 #RUN dnf -y install epel-release dnf-plugins-core
-RUN dnf install -y mock nosync
+RUN dnf install -y mock #nosync
 ##RUN dnf config-manager --set-enabled powertools
 
 VOLUME /build
