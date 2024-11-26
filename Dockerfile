@@ -1,4 +1,4 @@
-FROM fedora:40
+FROM fedora:41
 
 #RUN dnf -y install epel-release dnf-plugins-core
 RUN dnf install -y mock #nosync
@@ -8,7 +8,7 @@ VOLUME /build
 VOLUME /result
 
 COPY files/ /
-ADD 3rdparty/apache-maven-3.9.8-bin.tar.gz /
+ADD 3rdparty/apache-maven-3.9.9-bin.tar.gz /
 
 WORKDIR /build
 
