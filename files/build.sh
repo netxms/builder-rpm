@@ -29,12 +29,12 @@ cd /drone/src
 
 mkdir -p /var/cache/mock/m2-repo
 
-for V in 2023; do
-   mock --enable-network -r amazonlinux-$V-$(arch) --spec SPECS/*.spec --sources SOURCES \
-      --addrepo https://packages.netxms.org/devel/amazonlinux/$V/$(arch)/stable \
-      --addrepo https://packages.netxms.org/amazonlinux/$V/$(arch)/stable \
-      || dump_logs_and_exit
-done
+#for V in 2023; do
+#   mock --enable-network -r amazonlinux-$V-$(arch) --spec SPECS/*.spec --sources SOURCES \
+#      --addrepo https://packages.netxms.org/devel/amazonlinux/$V/$(arch)/stable \
+#      --addrepo https://packages.netxms.org/amazonlinux/$V/$(arch)/stable \
+#      || dump_logs_and_exit
+#done
 
 for V in 9 8; do
    mock --enable-network -r oraclelinux+epel-$V-$(arch) --spec SPECS/*.spec --sources SOURCES \
