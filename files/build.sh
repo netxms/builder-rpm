@@ -43,7 +43,7 @@ for V in 9 8; do
       || dump_logs_and_exit
 done
 
-for V in 41 40; do
+for V in 42 41 40; do
    mock --enable-network -r fedora-$V-$(arch) --spec SPECS/*.spec --sources SOURCES \
       --addrepo https://packages.netxms.org/devel/fedora/$V/$(arch)/stable \
       --addrepo https://packages.netxms.org/fedora/$V/$(arch)/stable \
