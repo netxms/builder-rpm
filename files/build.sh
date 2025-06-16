@@ -32,7 +32,16 @@ function usage() {
 function build_epel() {
     local version=$1
     echo "Building for EPEL $version"
-    mock --enable-network -r rhel+epel-$version-$(arch) --spec SPECS/*.spec --sources SOURCES \
+
+    # Use Oracle Linux for EPEL 8 and 9, CentOS Stream for EPEL 10+
+    local mock_config
+    if [[ $version -eq 8 || $version -eq 9 ]]; then
+        mock_config="oraclelinux+epel-$version-$(arch)"
+    else
+        mock_config="centos-stream+epel-$version-$(arch)"
+    fi
+
+    mock --enable-network -r $mock_config --spec SPECS/*.spec --sources SOURCES \
       --addrepo https://packages.netxms.org/devel/epel/$version/$(arch)/stable \
       --addrepo https://packages.netxms.org/epel/$version/$(arch)/stable \
       || dump_logs_and_exit
