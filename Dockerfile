@@ -12,4 +12,4 @@ ADD 3rdparty/apache-maven-3.9.9-bin.tar.gz /
 
 WORKDIR /build
 
-CMD ["/build.sh"]
+ENTRYPOINT ["/build.sh"]

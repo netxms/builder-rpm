@@ -15,8 +15,41 @@ function dump_logs_and_exit() {
     exit $original_exit_code
 }
 
+function usage() {
+    echo "Usage: $0 [--target TARGET]"
+    echo "Targets:"
+    echo "  epel8    - Build for RHEL/CentOS 8 + EPEL"
+    echo "  epel9    - Build for RHEL/CentOS 9 + EPEL"
+    echo "  epel10   - Build for RHEL/CentOS 10 + EPEL"
+    echo "  fedora41 - Build for Fedora 41"
+    echo "  fedora42 - Build for Fedora 42"
+    echo "  all      - Build for all targets (default)"
+    echo "  epel     - Build for all EPEL targets"
+    echo "  fedora   - Build for all Fedora targets"
+    exit 1
+}
+
+function build_epel() {
+    local version=$1
+    echo "Building for EPEL $version"
+    mock --enable-network -r rhel+epel-$version-$(arch) --spec SPECS/*.spec --sources SOURCES \
+      --addrepo https://packages.netxms.org/devel/epel/$version/$(arch)/stable \
+      --addrepo https://packages.netxms.org/epel/$version/$(arch)/stable \
+      || dump_logs_and_exit
+}
+
+function build_fedora() {
+    local version=$1
+    echo "Building for Fedora $version"
+    mock --enable-network -r fedora-$version-$(arch) --spec SPECS/*.spec --sources SOURCES \
+      --addrepo https://packages.netxms.org/devel/fedora/$version/$(arch)/stable \
+      --addrepo https://packages.netxms.org/fedora/$version/$(arch)/stable \
+      || dump_logs_and_exit
+}
+
 set -e
 
+# Setup containers storage
 mkdir -p /etc/containers
 cat > /etc/containers/storage.conf <<__END
 [storage]
@@ -26,28 +59,63 @@ graphroot = "/tmp/containers/storage"
 __END
 
 cd /drone/src
-
 mkdir -p /var/cache/mock/m2-repo
 
-#for V in 2023; do
-#   mock --enable-network -r amazonlinux-$V-$(arch) --spec SPECS/*.spec --sources SOURCES \
-#      --addrepo https://packages.netxms.org/devel/amazonlinux/$V/$(arch)/stable \
-#      --addrepo https://packages.netxms.org/amazonlinux/$V/$(arch)/stable \
-#      || dump_logs_and_exit
-#done
-
-for V in 9 8; do
-   mock --enable-network -r oraclelinux+epel-$V-$(arch) --spec SPECS/*.spec --sources SOURCES \
-      --addrepo https://packages.netxms.org/devel/epel/$V/$(arch)/stable \
-      --addrepo https://packages.netxms.org/epel/$V/$(arch)/stable \
-      || dump_logs_and_exit
+# Parse command line arguments
+TARGET="all"
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --target)
+            TARGET="$2"
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
 done
 
-for V in 42 41; do
-   mock --enable-network -r fedora-$V-$(arch) --spec SPECS/*.spec --sources SOURCES \
-      --addrepo https://packages.netxms.org/devel/fedora/$V/$(arch)/stable \
-      --addrepo https://packages.netxms.org/fedora/$V/$(arch)/stable \
-      || dump_logs_and_exit
-done
+# Execute builds based on target
+case $TARGET in
+    epel8)
+        build_epel 8
+        ;;
+    epel9)
+        build_epel 9
+        ;;
+    epel10)
+        build_epel 10
+        ;;
+    fedora41)
+        build_fedora 41
+        ;;
+    fedora42)
+        build_fedora 42
+        ;;
+    epel)
+        build_epel 10
+        build_epel 9
+        build_epel 8
+        ;;
+    fedora)
+        build_fedora 42
+        build_fedora 41
+        ;;
+    all)
+        build_epel 10
+        build_epel 9
+        build_epel 8
+        build_fedora 42
+        build_fedora 41
+        ;;
+    *)
+        echo "Unknown target: $TARGET"
+        usage
+        ;;
+esac
 
 cp /var/lib/mock/*/result/*.rpm /result/
