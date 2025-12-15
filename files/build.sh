@@ -8,7 +8,7 @@ function dump_logs_and_exit() {
         echo
         echo
         echo "### LOG: $f"
-        cat $f
+        cat "$f"
         echo
         echo "### End of $f"
     done
@@ -16,6 +16,7 @@ function dump_logs_and_exit() {
 }
 
 function usage() {
+
     echo "Usage: $0 [--target TARGET]"
     echo "Targets:"
     echo "  epel8    - Build for RHEL/CentOS 8 + EPEL"
@@ -41,18 +42,18 @@ function build_epel() {
         mock_config="centos-stream+epel-$version-$(arch)"
     fi
 
-    mock --enable-network -r $mock_config --spec SPECS/*.spec --sources SOURCES \
-      --addrepo https://packages.netxms.org/devel/epel/$version/$(arch)/stable \
-      --addrepo https://packages.netxms.org/epel/$version/$(arch)/stable \
+    mock --enable-network -r "$mock_config" --spec SPECS/*.spec --sources SOURCES \
+      --addrepo "https://packages.netxms.org/devel/epel/$version/$(arch)/stable" \
+      --addrepo "https://packages.netxms.org/epel/$version/$(arch)/stable" \
       || dump_logs_and_exit
 }
 
 function build_fedora() {
     local version=$1
     echo "Building for Fedora $version"
-    mock --enable-network -r fedora-$version-$(arch) --spec SPECS/*.spec --sources SOURCES \
-      --addrepo https://packages.netxms.org/devel/fedora/$version/$(arch)/stable \
-      --addrepo https://packages.netxms.org/fedora/$version/$(arch)/stable \
+    mock --enable-network -r "fedora-$version-$(arch)" --spec SPECS/*.spec --sources SOURCES \
+      --addrepo "https://packages.netxms.org/devel/fedora/$version/$(arch)/stable" \
+      --addrepo "https://packages.netxms.org/fedora/$version/$(arch)/stable" \
       || dump_logs_and_exit
 }
 
