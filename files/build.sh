@@ -22,8 +22,8 @@ function usage() {
     echo "  epel8    - Build for RHEL/CentOS 8 + EPEL"
     echo "  epel9    - Build for RHEL/CentOS 9 + EPEL"
     echo "  epel10   - Build for RHEL/CentOS 10 + EPEL"
-    echo "  fedora41 - Build for Fedora 41"
     echo "  fedora42 - Build for Fedora 42"
+    echo "  fedora43 - Build for Fedora 43"
     echo "  all      - Build for all targets (default)"
     echo "  epel     - Build for all EPEL targets"
     echo "  fedora   - Build for all Fedora targets"
@@ -100,11 +100,11 @@ case $TARGET in
     epel10)
         build_epel 10
         ;;
-    fedora41)
-        build_fedora 41
-        ;;
     fedora42)
         build_fedora 42
+        ;;
+    fedora43)
+        build_fedora 43
         ;;
     epel)
         build_epel 10
@@ -113,14 +113,14 @@ case $TARGET in
         ;;
     fedora)
         build_fedora 42
-        build_fedora 41
+        build_fedora 43
         ;;
     all)
         build_epel 10
         build_epel 9
         build_epel 8
         build_fedora 42
-        build_fedora 41
+        build_fedora 43
         ;;
     *)
         echo "Unknown target: $TARGET"
