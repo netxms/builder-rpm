@@ -1,6 +1,6 @@
 .PHONY: all build clean
 
-IMAGE_REVISION=1.16
+IMAGE_REVISION=1.17
 
 all: build
 

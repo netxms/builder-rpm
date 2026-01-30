@@ -8,7 +8,7 @@ This is a Docker-based RPM package builder for NetXMS, designed to build RPM pac
 
 ### Key Components
 
-- **Dockerfile**: Fedora 42-based container with mock build tools and Apache Maven
+- **Dockerfile**: Fedora 43-based container with mock build tools and Apache Maven
 - **build.sh**: Main build script that orchestrates package building across multiple distributions
 - **Mock configuration**: Custom mock settings for Maven integration and tmpfs optimization
 
@@ -16,7 +16,7 @@ This is a Docker-based RPM package builder for NetXMS, designed to build RPM pac
 
 1. Container sets up mock build environment with tmpfs for performance
 2. Binds Maven cache directory for dependency reuse
-3. Builds packages for RHEL/CentOS (versions 8, 9, 10) and Fedora (versions 41, 42)
+3. Builds packages for RHEL/CentOS (versions 8, 9, 10) and Fedora (versions 42, 43)
 4. Uses NetXMS package repositories for dependencies
 5. Outputs built RPMs to `/result` volume
 
@@ -41,8 +41,8 @@ The build script now supports target-specific builds for Drone parallel executio
 docker run --target epel8     # RHEL/CentOS 8 + EPEL only
 docker run --target epel9     # RHEL/CentOS 9 + EPEL only
 docker run --target epel10    # RHEL/CentOS 10 + EPEL only
-docker run --target fedora41  # Fedora 41 only
 docker run --target fedora42  # Fedora 42 only
+docker run --target fedora43  # Fedora 42 only
 
 # Build distribution groups
 docker run --target epel      # All EPEL targets
@@ -59,7 +59,7 @@ Update `IMAGE_REVISION` in Makefile for new image versions.
 
 Currently builds for:
 - RHEL/CentOS: 8, 9, 10 (with EPEL)
-- Fedora: 41, 42
+- Fedora: 42, 43
 - Amazon Linux: Temporarily disabled
 
 Note: Amazon Linux builds are commented out in build.sh
