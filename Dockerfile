@@ -14,6 +14,6 @@ RUN set -ex && \
         "$DISTRO_TYPE" "$DISTRO_VERSION" "$DISTRO_TYPE" "$DISTRO_VERSION" \
         > /etc/yum.repos.d/netxms.repo && \
     dnf update -y && \
-    dnf install -y rpm-build && \
+    dnf install -y rpm-build maven gcc-c++ make chrpath perl && \
     dnf clean all && \
     rm -rf /var/cache/dnf
