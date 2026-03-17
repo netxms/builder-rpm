@@ -4,6 +4,11 @@ FROM ${BASE_IMAGE}
 ARG DISTRO_TYPE
 ARG DISTRO_VERSION
 
+COPY files/apache-maven-3.9.14-bin.tar.gz /tmp/
+RUN tar xzf /tmp/apache-maven-3.9.14-bin.tar.gz -C /opt && \
+    rm /tmp/apache-maven-3.9.14-bin.tar.gz
+ENV PATH="/opt/apache-maven-3.9.14/bin:${PATH}"
+
 RUN set -ex && \
     (dnf install -y dnf5-plugins || dnf install -y dnf-plugins-core) && \
     if [ "$DISTRO_TYPE" = "epel" ]; then \
@@ -14,6 +19,9 @@ RUN set -ex && \
         "$DISTRO_TYPE" "$DISTRO_VERSION" "$DISTRO_TYPE" "$DISTRO_VERSION" \
         > /etc/yum.repos.d/netxms.repo && \
     dnf update -y && \
-    dnf install -y rpm-build maven gcc-c++ make chrpath perl && \
+    dnf install -y rpm-build gcc-c++ make chrpath perl java-25-openjdk-devel || \
+    dnf install -y rpm-build gcc-c++ make chrpath perl java-21-openjdk-devel || \
+    dnf install -y rpm-build gcc-c++ make chrpath perl java-17-openjdk-devel || \
+    dnf install -y rpm-build gcc-c++ make chrpath perl java-11-openjdk-devel && \
     dnf clean all && \
     rm -rf /var/cache/dnf
