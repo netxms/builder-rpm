@@ -6,8 +6,16 @@ on:
       - "master"
 
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { tag: epel8,    base_image: "oraclelinux:8",  distro_type: epel,   distro_version: "8" }
+          - { tag: epel9,    base_image: "oraclelinux:9",  distro_type: epel,   distro_version: "9" }
+          - { tag: epel10,   base_image: "oraclelinux:10", distro_type: epel,   distro_version: "10" }
+          - { tag: fedora42, base_image: "fedora:42",      distro_type: fedora, distro_version: "42" }
+          - { tag: fedora43, base_image: "fedora:43",      distro_type: fedora, distro_version: "43" }
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,6 +34,8 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/builder-rpm:1.17
-            ghcr.io/${{ github.repository_owner }}/builder-rpm:latest
+          build-args: |
+            BASE_IMAGE=${{ matrix.base_image }}
+            DISTRO_TYPE=${{ matrix.distro_type }}
+            DISTRO_VERSION=${{ matrix.distro_version }}
+          tags: ghcr.io/${{ github.repository_owner }}/builder-rpm:${{ matrix.tag }}

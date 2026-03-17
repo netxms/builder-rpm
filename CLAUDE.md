@@ -4,62 +4,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-This is a Docker-based RPM package builder for NetXMS, designed to build RPM packages across multiple distributions (RHEL/CentOS, Fedora) using mock build system.
+Per-distro Docker images for NetXMS RPM package building. Each image is a vanilla distro container with repos configured and `rpm-build` pre-installed, used as base images in Drone CI steps.
 
-### Key Components
+### Image Tags
 
-- **Dockerfile**: Fedora 43-based container with mock build tools and Apache Maven
-- **build.sh**: Main build script that orchestrates package building across multiple distributions
-- **Mock configuration**: Custom mock settings for Maven integration and tmpfs optimization
+Published to `ghcr.io/netxms/builder-rpm`:
 
-### Build Process Flow
+| Tag | Base Image |
+|-----|-----------|
+| `epel8` | `oraclelinux:8` |
+| `epel9` | `oraclelinux:9` |
+| `epel10` | `oraclelinux:10` |
+| `fedora42` | `fedora:42` |
+| `fedora43` | `fedora:43` |
 
-1. Container sets up mock build environment with tmpfs for performance
-2. Binds Maven cache directory for dependency reuse
-3. Builds packages for RHEL/CentOS (versions 8, 9, 10) and Fedora (versions 42, 43)
-4. Uses NetXMS package repositories for dependencies
-5. Outputs built RPMs to `/result` volume
+All images are multi-arch: `linux/amd64`, `linux/arm64`.
+
+### Dockerfile Build Args
+
+- `BASE_IMAGE` — base distro image (e.g. `oraclelinux:9`, `fedora:43`)
+- `DISTRO_TYPE` — `epel` or `fedora`
+- `DISTRO_VERSION` — version number (e.g. `9`, `43`)
 
 ## Common Commands
 
-### Building the Docker Image
 ```bash
-make build        # Build image with current version
-make clean        # Remove built images
+make all              # Build all 5 images
+make build-epel9      # Build single image
+make clean            # Remove all images
 ```
 
-### Running Builds
-The container expects:
-- `/build` volume: Source code with SPECS/ and SOURCES/ directories
-- `/result` volume: Output directory for built RPMs
+## CI/CD
 
-#### Parallel Build Support
-The build script now supports target-specific builds for Drone parallel execution:
-
-```bash
-# Build specific distributions
-docker run --target epel8     # RHEL/CentOS 8 + EPEL only
-docker run --target epel9     # RHEL/CentOS 9 + EPEL only
-docker run --target epel10    # RHEL/CentOS 10 + EPEL only
-docker run --target fedora42  # Fedora 42 only
-docker run --target fedora43  # Fedora 42 only
-
-# Build distribution groups
-docker run --target epel      # All EPEL targets
-docker run --target fedora    # All Fedora targets
-docker run --target all       # All targets (default)
-```
-
-This enables Drone to run multiple parallel steps, each building different distribution sets.
-
-### Version Management
-Update `IMAGE_REVISION` in Makefile for new image versions.
+GitHub Actions workflow (`.github/workflows/package.yml`) builds all 5 images in parallel with multi-arch support on push to master.
 
 ## Distribution Targets
 
-Currently builds for:
-- RHEL/CentOS: 8, 9, 10 (with EPEL)
+- RHEL/CentOS: 8, 9, 10 (via Oracle Linux + EPEL)
 - Fedora: 42, 43
-- Amazon Linux: Temporarily disabled
-
-Note: Amazon Linux builds are commented out in build.sh
